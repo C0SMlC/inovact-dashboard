@@ -73,6 +73,7 @@ function LoginComponent() {
                   pr="4.5rem"
                   type={show ? "text" : "password"}
                   placeholder="Enter password"
+                  id="password"
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <InputRightElement width="4.5rem">
