@@ -1,6 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { useState } from "react";
-import LoginComponent from "./components/loginComponent";
+import LoginComponent from "./components/LoginComponent";
 import CollegeSearch from "./components/SearchCollegeComponent";
 import CollegeStudentDetail from "./components/CollegeStudentDetail";
 
