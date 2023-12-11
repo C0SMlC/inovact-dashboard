@@ -95,12 +95,12 @@ const StudentsTable = ({ selectedCollege }) => {
         >
           <VStack spacing={6} align="center" mt={8}>
             <Heading size="xl" mb={10}>
-              Data
+              Users From {selectedCollege}
             </Heading>
             <Box overflowX="auto" w="100%">
               {isLoading ? (
                 // Display a loading spinner while data is being fetched
-                <Spinner size="xl" />
+                <Text>fetching users...</Text>
               ) : (
                 <Table variant="simple">
                   <Thead>

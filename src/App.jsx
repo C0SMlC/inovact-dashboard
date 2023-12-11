@@ -24,7 +24,11 @@ function App() {
         />
         <Route
           path="/app/:collegeId"
-          element={<CollegeStudentDetail selectedCollege={selectedCollege} />}
+          element={
+            <CollegeStudentDetail
+              selectedCollege={selectedCollege}
+            />
+          }
         />
       </Routes>
     </BrowserRouter>
