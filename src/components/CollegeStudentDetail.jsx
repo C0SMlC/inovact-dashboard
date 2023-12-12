@@ -8,9 +8,8 @@ import {
   Tbody,
   Tr,
   Th,
-  Td,
   VStack,
-  Heading,
+  Td,
   Box,
   Text,
   Link,
@@ -19,6 +18,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 import PageNav from "./PageNav";
 import useAuth from "../hooks/useAuth";
+import CollegeStudentItem from "./CollegeStudentItem";
 
 const StudentsTable = ({ selectedCollege }) => {
   const authUser = useAuth();
@@ -93,9 +93,9 @@ const StudentsTable = ({ selectedCollege }) => {
           justify="center"
         >
           <VStack spacing={6} align="center" mt={8}>
-            <Heading size="xl" mb={10}>
-              Users From {selectedCollege}
-            </Heading>
+            <Text fontSize="5xl" mb={10}>
+              {students.length || ""} users from {selectedCollege}
+            </Text>
             <Box overflowX="auto" w="100%">
               {isLoading ? (
                 // Display a loading spinner while data is being fetched
@@ -116,47 +116,19 @@ const StudentsTable = ({ selectedCollege }) => {
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {students.map((student, index) => (
-                      <Tr key={index}>
-                        <Td textAlign="center">{index + 1}</Td>
-                        <Td textAlign="center">
-                          {student.first_name + " " + student.last_name}
-                        </Td>
-                        <Td textAlign="center">{student.role}</Td>
-                        <Td textAlign="center">{student.email_id}</Td>
-                        <Td textAlign="center">
-                          <a
-                            href={student.github_profile || "#"}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {student.github_profile || "Not Updated"}
-                          </a>
-                        </Td>
-                        <Td textAlign="center">
-                          <a
-                            href={student.website || "#"}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {student.website || "Not Updated"}
-                          </a>
-                        </Td>
-                        <Td textAlign="center">
-                          {student.user_interests
-                            .map(
-                              (interest) => interest.area_of_interest.interest
-                            )
-                            .join(", ")}
-                        </Td>
-                        <Td textAlign="center">
-                          {student.user_skills
-                            .map((skillObject) => skillObject.skill)
-                            .join(", ") || "Not Updated"}
-                        </Td>
-                        <Td textAlign="center">{student.numProjects}</Td>
+                    {students.length > 0 ? (
+                      students.map((student, index) => (
+                        <CollegeStudentItem
+                          student={student}
+                          index={index}
+                          key={index}
+                        />
+                      ))
+                    ) : (
+                      <Tr>
+                        <Td textAlign="center">No Students Found</Td>
                       </Tr>
-                    ))}
+                    )}
                   </Tbody>
                 </Table>
               )}
@@ -188,6 +160,10 @@ const StudentsTable = ({ selectedCollege }) => {
 
 StudentsTable.propTypes = {
   selectedCollege: PropTypes.string,
+};
+
+CollegeStudentItem.defaultProps = {
+  student: null,
 };
 
 export default StudentsTable;
