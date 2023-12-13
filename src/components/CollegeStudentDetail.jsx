@@ -1,35 +1,35 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
-
 import {
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
   VStack,
-  Heading,
   Box,
   Text,
   Link,
+  Alert,
+  AlertIcon,
+  CloseButton,
+  Button,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
 
+import { ArrowBackIcon } from "@chakra-ui/icons";
+import { Link as RouterLink } from "react-router-dom";
 import PageNav from "./PageNav";
 import useAuth from "../hooks/useAuth";
+import StudentsTableContent from "./StudentsTableContent";
+
+const LoadingSpinner = () => <Text>fetching users...</Text>;
 
 const StudentsTable = ({ selectedCollege }) => {
   const authUser = useAuth();
-
   const [students, setStudents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [numberOfPosts, setNumberOfPosts] = useState(0);
 
   useEffect(() => {
-    // Make a POST request to fetch student data based on the selectedCollege
     const fetchData = async () => {
+      if (!selectedCollege) {
+        return;
+      }
       try {
         const response = await axios.post(
           "https://xe1zqr4z18.execute-api.ap-south-1.amazonaws.com/production/Inovact_getUsersBasedOnCollege",
@@ -43,144 +43,111 @@ const StudentsTable = ({ selectedCollege }) => {
           }
         );
 
-        console.log(response.data);
         setStudents(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
-        // Set loading to false once the data is fetched (whether successful or not)
         setIsLoading(false);
       }
     };
 
-    const fetchNumberOfPosts = async () => {
-      try {
-        const response = await axios.post(
-          "https://xe1zqr4z18.execute-api.ap-south-1.amazonaws.com/production/Inovact_userPostAggregate",
-          {
-            userId: numberOfPosts,
-          },
-          {
-            headers: {
-              "Access-Control-Allow-Origin": "*",
-            },
-          }
-        );
-        setNumberOfPosts(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+    fetchData();
+
+    // Set up a warning message when the user tries to refresh
+    const handleBeforeUnload = (event) => {
+      const message =
+        "Are you sure you want to leave? Your changes may not be saved.";
+      event.returnValue = message; // Standard for most browsers
+      return message; // For some older browsers
     };
 
-    fetchData();
-    // fetchNumberOfPosts();
-  }, [selectedCollege, numberOfPosts]);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      // Clean up the event listener when the component unmounts
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [selectedCollege]);
 
   return (
     <>
       <PageNav />
-      {authUser ? (
-        <Box
-          w="full"
-          minH="100vh"
-          bg="#FFFFFF"
-          p={4}
-          mt={8}
-          mx="auto"
-          display="flex"
-          flexDirection="column"
-          align="center"
-          justify="center"
-        >
-          <VStack spacing={6} align="center" mt={8}>
-            <Heading size="xl" mb={10}>
-              Users From {selectedCollege}
-            </Heading>
-            <Box overflowX="auto" w="100%">
+      <Button
+        as={RouterLink}
+        to="/app"
+        mt={8}
+        size="lg"
+        ml={8}
+        colorScheme="blue"
+        leftIcon={<ArrowBackIcon />}
+      >
+        Back
+      </Button>
+      {selectedCollege ? (
+        authUser ? (
+          <Box
+            w="full"
+            minH="100vh"
+            bg="#FFFFFF"
+            p={4}
+            mt={8}
+            mx="auto"
+            display="flex"
+            flexDirection="column"
+            align="center"
+            justify="center"
+          >
+            <VStack spacing={6} align="center" mt={8}>
+              <Text fontSize="2xl" mb={10}>
+                Users From <Text fontWeight={700}>{selectedCollege}</Text>
+              </Text>
               {isLoading ? (
-                // Display a loading spinner while data is being fetched
-                <Text>fetching users...</Text>
+                <LoadingSpinner />
               ) : (
-                <Table variant="simple">
-                  <Thead>
-                    <Tr bgColor="#E1F5FE" color="black" fontWeight="extrabold">
-                      <Th textAlign="center">SL no</Th>
-                      <Th textAlign="center">Name</Th>
-                      <Th textAlign="center">Profile type</Th>
-                      <Th textAlign="center">Email-id</Th>
-                      <Th textAlign="center">Github Link</Th>
-                      <Th textAlign="center">Website Link</Th>
-                      <Th textAlign="center">Area of Interest</Th>
-                      <Th textAlign="center">Skills</Th>
-                      <Th textAlign="center">No. of Projects/Ideas/Thoughts</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {students.map((student, index) => (
-                      <Tr key={index}>
-                        <Td textAlign="center">{index + 1}</Td>
-                        <Td textAlign="center">
-                          {student.first_name + " " + student.last_name}
-                        </Td>
-                        <Td textAlign="center">{student.role}</Td>
-                        <Td textAlign="center">{student.email_id}</Td>
-                        <Td textAlign="center">
-                          <a
-                            href={student.github_profile || "#"}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {student.github_profile || "Not Updated"}
-                          </a>
-                        </Td>
-                        <Td textAlign="center">
-                          <a
-                            href={student.website || "#"}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {student.website || "Not Updated"}
-                          </a>
-                        </Td>
-                        <Td textAlign="center">
-                          {student.user_interests
-                            .map(
-                              (interest) => interest.area_of_interest.interest
-                            )
-                            .join(", ")}
-                        </Td>
-                        <Td textAlign="center">
-                          {student.user_skills
-                            .map((skillObject) => skillObject.skill)
-                            .join(", ") || "Not Updated"}
-                        </Td>
-                        <Td textAlign="center">{student.numProjects}</Td>
-                      </Tr>
-                    ))}
-                  </Tbody>
-                </Table>
+                <StudentsTableContent students={students} />
               )}
-            </Box>
-          </VStack>
-        </Box>
+            </VStack>
+          </Box>
+        ) : (
+          <Box
+            w="full"
+            bg="#FFFFFF"
+            p={4}
+            mt={8}
+            mx="auto"
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Alert status="warning" mb={4}>
+              <AlertIcon />
+              Refreshing is disabled.{" "}
+              <Link as={RouterLink} to="/search-college" color="blue.500">
+                Click here to search for a college.
+              </Link>
+              <CloseButton position="absolute" right="8px" top="8px" />
+            </Alert>
+            <Text fontSize="xl">
+              <Link as={RouterLink} to="/login" color="blue.500">
+                Sign in
+              </Link>{" "}
+              to view this page
+            </Text>
+          </Box>
+        )
       ) : (
-        <Box
-          w="full"
-          bg="#FFFFFF"
-          p={4}
+        <Text
+          fontSize="xl"
           mt={8}
-          mx="auto"
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
+          align="center"
+          color="red.500"
+          fontWeight="bold"
         >
-          <Text fontSize="xl">
-            <Link as={RouterLink} to="/login" color="blue.500">
-              Sign in
-            </Link>{" "}
-            to view this page
+          Something went wrong,{" "}
+          <Text as={RouterLink} to="/app" color="blue.500">
+            Click here to search college
           </Text>
-        </Box>
+        </Text>
       )}
     </>
   );
