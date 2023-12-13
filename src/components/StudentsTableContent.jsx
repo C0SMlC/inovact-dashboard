@@ -3,7 +3,7 @@ import { Table, Thead, Tbody, Tr, Th, Box } from "@chakra-ui/react";
 import UserDetailsRow from "./UserDetailsRow";
 
 const StudentsTableContent = ({ students }) => (
-  <Box overflowX="auto" w="100%">
+  <Box overflowX="auto" w="100%" h="90vh" maxHeight="100%">
     <Table variant="simple">
       <Thead>
         <Tr bgColor="#E1F5FE" color="black" fontWeight="extrabold">
