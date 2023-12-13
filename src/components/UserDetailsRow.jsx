@@ -59,9 +59,11 @@ const UserDetailsRow = ({ student, index }) => {
         <UserProfileLink href={student.website} text={student.website} />
       </Td>
       <Td textAlign="center">
-        {student.user_interests
-          .map((interest) => interest.area_of_interest.interest)
-          .join(", ")}
+        {student.user_interests.length !== 0
+          ? student.user_interests
+              .map((interest) => interest.area_of_interest.interest)
+              .join(", ")
+          : "Not Updated"}
       </Td>
       <Td textAlign="center">
         {student.user_skills
