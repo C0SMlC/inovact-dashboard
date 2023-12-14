@@ -72,6 +72,23 @@ const SearchCollegeComponent = ({ onCollegeSelection }) => {
     setFilteredColleges(filteredResults);
   }, [searchQuery, colleges]);
 
+  useEffect(() => {
+    // Prompt the user when attempting to refresh or close the page
+    const handleBeforeUnload = (event) => {
+      const message =
+        "Are you sure you want to leave? Your changes may not be saved.";
+      event.returnValue = message; // Standard for most browsers
+      return message; // For some older browsers
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    // Cleanup the event listener when the component is unmounted
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
   const handleCollegeSelection = (selectedCollege) => {
     console.log("Selected College:", selectedCollege);
     setSearchQuery(selectedCollege.university);
