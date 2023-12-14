@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 import {
-  VStack,
   Box,
   Text,
   Link,
@@ -10,15 +9,15 @@ import {
   AlertIcon,
   CloseButton,
   Button,
+  VStack,
 } from "@chakra-ui/react";
-
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { Link as RouterLink } from "react-router-dom";
 import PageNav from "./PageNav";
 import useAuth from "../hooks/useAuth";
 import StudentsTableContent from "./StudentsTableContent";
 
-const LoadingSpinner = () => <Text>fetching users...</Text>;
+const LoadingSpinner = () => <Text>Fetching users...</Text>;
 
 const StudentsTable = ({ selectedCollege }) => {
   const authUser = useAuth();
@@ -30,6 +29,7 @@ const StudentsTable = ({ selectedCollege }) => {
       if (!selectedCollege) {
         return;
       }
+
       try {
         const response = await axios.post(
           "https://xe1zqr4z18.execute-api.ap-south-1.amazonaws.com/production/Inovact_getUsersBasedOnCollege",
@@ -53,18 +53,16 @@ const StudentsTable = ({ selectedCollege }) => {
 
     fetchData();
 
-    // Set up a warning message when the user tries to refresh
     const handleBeforeUnload = (event) => {
       const message =
         "Are you sure you want to leave? Your changes may not be saved.";
-      event.returnValue = message; // Standard for most browsers
-      return message; // For some older browsers
+      event.returnValue = message;
+      return message;
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {
-      // Clean up the event listener when the component unmounts
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [selectedCollege]);

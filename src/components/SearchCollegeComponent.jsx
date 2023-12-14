@@ -102,7 +102,7 @@ const SearchCollegeComponent = ({ onCollegeSelection }) => {
             mb={20}
             px={10}
           >
-            <p>Signed in as {authUser.email} </p>
+            <Text>Signed in as {authUser.email} </Text>
             <Button
               onClick={handleLogout}
               colorScheme="blue"
